@@ -1,0 +1,114 @@
+---
+title: "Carly_Assignment4"
+output: html_notebook
+---
+#Install Packages
+```{r}
+install.packages("tidyverse", dependencies = TRUE)
+install.packages("ggthemes", dependencies = TRUE)
+
+```
+
+#Load Packages(2)
+```{r}
+library(tidyverse)
+library(ggthemes)
+```
+
+#Import Data(3)
+```{r}
+assignment4 = read_csv("a4_data.csv")
+```
+
+#Rows and Columns (4)
+```{r}
+nrow(assignment4)
+ncol(assignment4)
+#The data file has 3700 rows and 12 columns
+```
+
+#Unique participants and trials(5)
+```{r}
+#trial1 = assignment4 %>% filter(trial==1)
+#nrow(trial1)
+#there were 37 unique subjects
+
+assignment4 %>% group_by(subject)%>%count()
+#each subject completed 100 trials
+
+```
+
+#Levels of Variables
+```{r}
+assignment4 = assignment4%>%mutate(prime_condition = as.factor(prime_condition), state=as.factor(state))
+
+levels(assignment4%>%pull(prime_condition))
+levels(assignment4%>%pull(state))
+
+#the variable "prime condition" has four levels. The variable "state" also has four levels
+
+```
+
+#Subsets of Columns(7)
+```{r}
+prime_information = assignment4 %>% select(subject,prime_condition)
+```
+
+#Subsets of Rows(8)
+```{r}
+phonological = assignment4%>%filter(prime_condition =="phonological", accuracy == 1)
+```
+
+#Summarizing accuracy per subject(9)
+```{r}
+subject_acc = assignment4 %>% group_by(subject) %>% summarise(mean_acc = mean(accuracy))
+```
+
+#Summarizing accuracy per prime condition(10)
+```{r}
+prime_acc = assignment4 %>% group_by(prime_condition) %>% summarise(mean_acc = mean(accuracy), sd_acc = sd(accuracy))
+```
+
+#Histogram of Subject Accuracy(11)
+```{r}
+subject_acc %>% ggplot(aes(x=mean_acc)) +
+  geom_histogram(binwidth = 0.2, fill = "brown", color = "black") +
+  xlab ("mean accuracy")+ 
+  ylab ("count")+ 
+  ggtitle("Histogram of mean accuracy")
+```
+
+#Bar plot of Prime Condition (12)
+```{r}
+prime_acc %>% 
+  ggplot(aes(x = prime_condition, y = mean_acc)) +
+  geom_bar (stat = "identity", fill = "pink", color = "purple")
+  theme_fivethirtyeight()+
+  xlab ("prime condition") +
+  ylab ("mean accuracy") +
+  ggtitle("Mean accuracy across prime condition")
+```
+
+#Data Interpretation (13)
+```{r}
+
+```
+
+EXTRA CREDIT
+
+#Summarizing accuracy per prime condition and state (14)
+```{r}
+state_prime_acc = assignment4%>%group_by(state, prime_condition)%>%summarize(mean_acc = mean(accuracy))
+```
+
+#Bar plot of prime condition and state
+```{r}
+state_prime_acc %>% 
+  ggplot(aes(x = prime_condition, y = mean_acc, fill = state)) +
+  geom_col(position = "dodge") +
+  theme_few() +
+  xlab ("prime condition") +
+  ylab("mean accuaracy") +
+  ggtitle("mean accuracy across prime condiiton and state")
+```
+
